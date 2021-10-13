@@ -539,6 +539,7 @@ void InstanceImpl::initialize(Network::Address::InstanceConstSharedPtr local_add
   }
 
   // Workers get created first so they register for thread local updates.
+  // 这里已经创建好了Worker，但是没有loop，所以在这之后可以调用dispatch.post，但其实不会执行，需要startWorkers之后才会执行
   listener_manager_ =
       std::make_unique<ListenerManagerImpl>(*this, listener_component_factory_, worker_factory_,
                                             bootstrap_.enable_dispatcher_stats(), quic_stat_names_);
@@ -815,6 +816,7 @@ RunHelper::RunHelper(Instance& instance, const Options& options, Event::Dispatch
     }
 
     ENVOY_LOG(info, "all clusters initialized. initializing init manager");
+    // 这里初始化init_manager，然后会调用target_handle.initialize，比如lds的start就开始执行了
     init_manager.initialize(init_watcher_);
 
     // Now that we're execute all the init callbacks we can resume RDS

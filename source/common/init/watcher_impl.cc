@@ -12,6 +12,7 @@ bool WatcherHandleImpl::ready() const {
   if (locked_fn) {
     // If we can "lock" a shared pointer to the watcher's callback function, call it.
     ENVOY_LOG(debug, "{} initialized, notifying {}", handle_name_, name_);
+    // target ready后，会触发WatchHandleImpl ready，然后执行这个函数fn_， fn_ 在manager_impl.cc里就是onTargetRead，会--count一直到0然后执行manager的ready
     (*locked_fn)(handle_name_);
     return true;
   } else {
