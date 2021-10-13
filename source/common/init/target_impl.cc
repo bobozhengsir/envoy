@@ -41,6 +41,7 @@ TargetHandlePtr TargetImpl::createHandle(absl::string_view handle_name) const {
       new TargetHandleImpl(handle_name, name_, std::weak_ptr<InternalInitializeFn>(fn_)));
 }
 
+// target 完成后调用，比如 onXXSuccess 里调用
 bool TargetImpl::ready() {
   if (watcher_handle_) {
     // If we have a handle for the ManagerImpl's watcher, signal it and then reset so it can't be

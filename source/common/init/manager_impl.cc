@@ -8,6 +8,7 @@
 namespace Envoy {
 namespace Init {
 
+// 核心在watcher_ 的ReadyFn，会执行onTargetReady
 ManagerImpl::ManagerImpl(absl::string_view name)
     : name_(fmt::format("init manager {}", name)),
       watcher_(name_, [this](absl::string_view target_name) { onTargetReady(target_name); }) {}
@@ -37,6 +38,7 @@ void ManagerImpl::add(const Target& target) {
   }
 }
 
+// clusterManager initialized后执行
 void ManagerImpl::initialize(const Watcher& watcher) {
   // If the manager is already initializing or initialized, consider this a programming error.
   ASSERT(state_ == State::Uninitialized, fmt::format("attempted to initialize {} twice", name_));
@@ -56,6 +58,7 @@ void ManagerImpl::initialize(const Watcher& watcher) {
     // Attempt to initialize each target. If a target is unavailable, treat it as though it
     // completed immediately.
     for (const auto& target_handle : target_handles_) {
+      // target handle 初始化成功不会执行onTargetReady
       if (!target_handle->initialize(watcher_)) {
         onTargetReady(target_handle->name());
       }
